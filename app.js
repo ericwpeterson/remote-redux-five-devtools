@@ -1,29 +1,20 @@
 var socket = require('socket.io-client')('http://localhost:8091');
-const SET_PROP  = 'monobject/SET_PROP';
 
-console.log(process.argv.length);
+/*
+NOTE: This is an example of an action
+"{ \"type\": \"monobject/SET_PROP\", \"monObject\": \"a\", \"property\": \"a\", \"value\": \"a\" }"
+*/
 
-if (process.argv.length !== 5) {
-    console.log("usage:\n node app.js 'monobject' 'property' 'value'\n\n");
+if (process.argv.length !== 3) {
+    console.log("usage:\n node app.js <ACTION_OBJECT>\n See app.js for an example of a properly escaped action object\n");
     process.exit();
 }
 
-function setProperty(monObject, property, value) {
-    return {
-        type: SET_PROP,
-        monObject: monObject,
-        property: property,
-        value: value
-    };
-}
+let action = JSON.parse(process.argv[2]);
 
+console.log('sending ', action);
 
 socket.on('connect', function() {
-    let monObject = process.argv[2]
-    let property = process.argv[3]
-    let value = process.argv[4]
-
-    socket.emit('action', setProperty(monObject, property, value)  );
-
+    socket.emit('action', action  );
     setTimeout( function() {process.exit(0)}, 10 );
 });
